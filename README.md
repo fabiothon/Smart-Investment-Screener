@@ -2,9 +2,9 @@
 
 This Python code creates an interactive dashboard for smart investment screening, leveraging data fetched from a financial data API. The goal is to provide a comprehensive analysis of a single company based on its stock symbol. The dashboard includes various charts such as revenue history, earnings history, operating margin trends, historical stock prices, Monte Carlo simulation of stock prices, and MACD chart for technical analysis. Additionally, key financial indicators and scores like total investment score, debt-to-equity ratio, return on invested capital (ROIC), enterprise value over EBIT, and minimum growth rate are displayed. Users can also apply structured and unstructured filters using check buttons for further analysis. Company information including ticker symbol, exchange, currency, current price, industry, CEO, description, location, and contact details are displayed in a sidebar. The dashboard layout is organized using the BootstrapTemplate from Panel library, providing an intuitive and interactive interface for investment decision-making.
 
-<img width="1464" alt="Screenshot 2024-04-03 at 13 47 22" src="https://github.com/fabiothon/Smart-Investment-Screener/assets/116906028/8e37f67d-e419-416e-9a00-88a1060d1202">
-<img width="1463" alt="Screenshot 2024-04-03 at 13 48 15" src="https://github.com/fabiothon/Smart-Investment-Screener/assets/116906028/d194dd16-e3b1-47e7-a687-5307f9b0b019">
-<img width="1466" alt="Screenshot 2024-04-03 at 13 48 28" src="https://github.com/fabiothon/Smart-Investment-Screener/assets/116906028/068cf1ed-3e16-4376-87a8-9d15f95e0b96">
+<img width="1464" alt="Screenshot 2024-04-03 at 13 47 22" src="https://github.com/fabiothon/Smart-Investment-Screener/blob/0cfab892b688413e425464c0a862374ffa8d98c8/picture_1.png">
+<img width="1463" alt="https://github.com/fabiothon/Smart-Investment-Screener/blob/0cfab892b688413e425464c0a862374ffa8d98c8/picture_2.png">
+<img width="1466" alt="Screenshot 2024-04-03 at 13 48 28" src="https://github.com/fabiothon/Smart-Investment-Screener/blob/0cfab892b688413e425464c0a862374ffa8d98c8/picture_3.png">
 
 ## Installation
 
