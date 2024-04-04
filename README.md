@@ -31,5 +31,5 @@ to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
-## License
+## Licenses
 This script uses the [MIT](https://choosealicense.com/licenses/mit/) License.
