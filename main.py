@@ -26,27 +26,27 @@
 # it could become relevant if a paid plan is opted for in the future.
 
 # Libraries
-import keyring
-import pandas as pd
-from warnings import simplefilter
-import json
-from urllib.request import urlopen
-import panel as pn
-pn.extension('tabulator')
-import holoviews as hv
-hv.extension('bokeh')
-from PIL import Image
-from io import BytesIO
-import plotly.graph_objects as go
-import plotly.express as px
-import hvplot.pandas
-import yfinance as yf
-import statistics
-import numpy as np
-from plotly.subplots import make_subplots
-from ta.utils import dropna
-from ta.volatility import BollingerBands
-from ta.trend import MACD
+import keyring # For save storage and access to API-Key
+import pandas as pd # To handle dataframe
+from warnings import simplefilter # Filters out unecessary advices
+import json # Library to work with json
+from urllib.request import urlopen # Library to work with URL requests
+import panel as pn # Library to create a dashboard
+pn.extension('tabulator') # Extension for a better graphic
+import holoviews as hv # Holoviews creates interactive graphs
+hv.extension('bokeh') # Extension for better graphic
+from PIL import Image # Library to import .png pictures
+from io import BytesIO # Library to handle pictures
+import plotly.graph_objects as go # Creates graphs
+import plotly.express as px # Creates graphs
+import hvplot.pandas # Creates graphs
+import yfinance as yf # Library to access Yahoo Finance API
+import statistics # For easier calculation
+import numpy as np # For easier calculation
+from plotly.subplots import make_subplots # Creates graphs
+from ta.utils import dropna # Creates graphs
+from ta.volatility import BollingerBands # Creates graphs
+from ta.trend import MACD # Creates graphs
 
 # Global default setting
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
