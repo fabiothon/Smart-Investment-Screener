@@ -151,8 +151,8 @@ except Exception as e:
 # API-Call for income statement
 try:
     income_statement = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/income-statement/{str(stock_symbol)}?period=annual&limit=50&apikey={str(api_key)}")
-    income_statement_df_raw = pd.DataFrame(income_statement)
-    income_statement_df_raw = income_statement_df_raw[column_order_6]
+    income_statement_df_raw = pd.DataFrame(income_statement) # Transformation to a pandas dataframe
+    income_statement_df_raw = income_statement_df_raw[column_order_6] # Reorder of the dataframe
     print("SUCCESS: Income statement loaded.")
 except Exception as e:
     print("ERROR: Failure to retrieve Income Statement.","\n", e)
@@ -160,8 +160,8 @@ except Exception as e:
 # API-Call for analysis of statement
 try:
     statement_analysis = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/key-metrics/{str(stock_symbol)}?period&limit=50&apikey={str(api_key)}")
-    statement_analysis_df_raw = pd.DataFrame(statement_analysis)
-    statement_analysis_df_raw = statement_analysis_df_raw[column_order_3]
+    statement_analysis_df_raw = pd.DataFrame(statement_analysis) # Transformation to a pandas dataframe
+    statement_analysis_df_raw = statement_analysis_df_raw[column_order_3] # Reorder of the dataframe
     print("SUCCESS: Statement analysis loaded.")
 except Exception as e:
     print("\n","ERROR: Failure to retrieve Statement Analysis.","\n", e)
@@ -169,16 +169,17 @@ except Exception as e:
 # API-Call for general company information
 try:
     company_information = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/profile/{str(stock_symbol)}?period&limit=1&apikey={str(api_key)}")
-    company_information_df_raw = pd.DataFrame(company_information)
-    company_information_df = company_information_df_raw[column_order_1]
+    company_information_df_raw = pd.DataFrame(company_information) # Transformation to a pandas dataframe
+    company_information_df = company_information_df_raw[column_order_1] # Reorder of the dataframe
     print("SUCCESS: Company Information loaded.")
 except Exception as e:
     print("\n","ERROR: Failure to retrieve Company Information.","\n", e)
 
+# API-Call for chart information
 try:
     chart_information = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/historical-price-full/{str(stock_symbol)}?apikey={str(api_key)}")
-    chart_information_df_raw = pd.DataFrame(chart_information['historical'])
-    chart_information_df = chart_information_df_raw[column_order_7]
+    chart_information_df_raw = pd.DataFrame(chart_information['historical']) # Transformation to a pandas dataframe
+    chart_information_df = chart_information_df_raw[column_order_7] # Reorder of the dataframe
     print("SUCCESS: Chart Information loaded.")
 except Exception as e:
     print("\n","ERROR: Failure to retrieve Chart Information.","\n", e)
@@ -194,7 +195,7 @@ except Exception as e:
 #     print("\n","ERROR: Failure to retrieve Insider Information.","\n", e)
 # =============================================================================
 
-# Creation of a temp storage for the raw data set
+# Creation of a temp storage for the raw data set -> Save to a SQLite DB
 financial_statement_df = financial_statement_df_raw
 income_statement_df = income_statement_df_raw
 statement_analysis_df = statement_analysis_df_raw
@@ -202,7 +203,7 @@ statement_analysis_df = statement_analysis_df_raw
 # =============================================================================
 # BASIC DATA MANIPULATION
 # =============================================================================
-
+# Transformation of date column and creation of year column
 try:
     financial_statement_df['date'] = pd.to_datetime(financial_statement_df['date'])
     financial_statement_df['year'] = financial_statement_df['date'].dt.year
@@ -219,7 +220,7 @@ try:
 except Exception as e:
     print("\n","ERROR: Failure to convert dataframe to new format.","\n", e)
 
-# Merging of three df
+# Merging of three financial dataframes to one: financial_df
 try:
     finance_df = pd.merge(financial_statement_df, statement_analysis_df, on=['year'])
     finance_df = pd.merge(finance_df, income_statement_df, on=['year'])
@@ -232,7 +233,7 @@ except Exception as e:
 # CALCULATIONS BASED ON FINANCE DATA
 # =============================================================================
 
-# Calculation of TTM values (.loc enabled)
+# Calculation of TTM values (.loc enabled): TTM = Trailing Twelve Months
 try:
     latest_date_idx = finance_df['year'].idxmax()
     ttm_values = finance_df.loc[latest_date_idx].copy()
@@ -240,7 +241,7 @@ try:
 except Exception as e:
     print("\n","ERROR: Failure to generate TTM values.","\n", e)
     
-# Calculation of historic (20XX) values (.loc enabled)
+# Calculation of historic (20XX) values (.loc enabled): The oldest date is taken - in our case 5 years
 try:
     historic_date_idx = finance_df['year'].idxmin()
     historic_values = finance_df.loc[historic_date_idx].copy()
