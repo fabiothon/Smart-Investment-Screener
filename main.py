@@ -25,7 +25,9 @@
 # notice some commented-out code within the script, which remains unused at present. However, 
 # it could become relevant if a paid plan is opted for in the future.
 
+# =============================================================================
 # Libraries
+# =============================================================================
 import keyring # For save storage and access to API-Key
 import pandas as pd # To handle dataframe
 from warnings import simplefilter # Filters out unecessary advices
@@ -48,18 +50,22 @@ from ta.utils import dropna # Creates graphs
 from ta.volatility import BollingerBands # Creates graphs
 from ta.trend import MACD # Creates graphs
 
-# Global default setting
-simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
+# =============================================================================
+# Global default setting: This section sets global variables
+# =============================================================================
+simplefilter(action="ignore", category=pd.errors.PerformanceWarning) # Supresses performance warnings
 pd.options.mode.chained_assignment = None
-accent = "#BB2649"
-upwards_pyramid_symbol = "triangle-up"
-downwards_pyramid_symbol = "triangle-down"
+accent = "#BB2649" # Sets a color
+upwards_pyramid_symbol = "triangle-up" # Sets symbol
+downwards_pyramid_symbol = "triangle-down" # Sets symbol
 
+# =============================================================================
 # Variables
-stock_symbol = input("INPUT - Fill in the Stock Symbol: ")
-api_key = keyring.get_password("Financial_Modeling_Prep", "Financial_Modeling_Prep")
+# =============================================================================
+stock_symbol = input("INPUT - Fill in the Stock Symbol: ") # Input of the stock symbol
+api_key = keyring.get_password("Financial_Modeling_Prep", "Financial_Modeling_Prep") # Uses the library keyring to safely get the API-Key
 
-# Column orders
+# Column orders for all the loaded datasets
 column_order_1 = ['symbol', 'price', 'range', 'changes', 'currency', 'exchangeShortName', 
                   'industry', 'website', 'description', 'ceo', 'sector', 'country', 'companyName',
                   'fullTimeEmployees', 'address', 'city', 'zip', 'state', 'phone']
@@ -83,29 +89,31 @@ column_order_6 = ['date','revenue', 'grossProfit', 'netIncome', 'operatingIncome
 
 column_order_7 = ['date', 'open', 'high', 'low', 'close']
 
+# =============================================================================
 # FUNCTIONS
+# =============================================================================
 
-# BOLLINGER BANDS
+# BOLLINGER BANDS: This function generates bollinger bands for the technical analysis
 def calculate_bb_indicators(technical_analysis_df):
     indicator_bb = BollingerBands(close=technical_analysis_df["Close"], window=20, window_dev=2)
-    technical_analysis_df['bb_bbm'] = indicator_bb.bollinger_mavg()
-    technical_analysis_df['bb_bbh'] = indicator_bb.bollinger_hband()
-    technical_analysis_df['bb_bbl'] = indicator_bb.bollinger_lband()
+    technical_analysis_df['bb_bbm'] = indicator_bb.bollinger_mavg() # Moveing average SMA20
+    technical_analysis_df['bb_bbh'] = indicator_bb.bollinger_hband() # High band
+    technical_analysis_df['bb_bbl'] = indicator_bb.bollinger_lband() # Low band
     
-    return technical_analysis_df
+    return technical_analysis_df # Return of dataframe
 
-# MACD INDICATORS
+# MACD INDICATORS: This function generates MACD Indicators for the technical analysis
 def calculate_MACD_indicators(technical_analysis_df):
-    macd_object = MACD(technical_analysis_df['Close'])
-    technical_analysis_df['MACD'] = macd_object.macd()
-    technical_analysis_df['MACD_Signal'] = macd_object.macd_signal()
-    technical_analysis_df['MACD_Diff'] = macd_object.macd_diff()
-    technical_analysis_df['SMA50'] = technical_analysis_df['Close'].rolling(window=50).mean()
-    technical_analysis_df['SMA200'] = technical_analysis_df['Close'].rolling(window=200).mean()
+    macd_object = MACD(technical_analysis_df['Close']) # Gets the Closing Price
+    technical_analysis_df['MACD'] = macd_object.macd() # Generates the MACD Line
+    technical_analysis_df['MACD_Signal'] = macd_object.macd_signal() # Generates the MACD Signal Line
+    technical_analysis_df['MACD_Diff'] = macd_object.macd_diff() # Generates the MACD Difference (unused in the plot)
+    technical_analysis_df['SMA50'] = technical_analysis_df['Close'].rolling(window=50).mean() # Generates the SMA50
+    technical_analysis_df['SMA200'] = technical_analysis_df['Close'].rolling(window=200).mean() # Generates the SMA200
     
-    return technical_analysis_df
+    return technical_analysis_df # Return of dataframe
     
-# UPDATE FUNCTION
+# UPDATE FUNCTION: This functions represents the backend logic for the buttons in the technical analysis
 def update_traces(button_idx):
     visibility = [
         [True, True, False, False, False, False, False, False, False, True, True, True, True],    # None
@@ -114,11 +122,12 @@ def update_traces(button_idx):
         [True, True, False, False, False, False, False, True, True, True, True, True, True],      # BB
         [True, True, True, True, True, True, True, True, True, True, True, True, True]]           # All
     
-    return visibility[button_idx]
+    return visibility[button_idx] # Return of the logic
 
 # =============================================================================
 # API-CALLS AND TRANSFORMATION TO DATAFRAMES
 # =============================================================================
+# API-CALL FUNTION: Access to the FMP-API with exception handling and manual logging
 def get_jsonparsed_data(url):
     try:
         res = urlopen(url)
@@ -128,8 +137,9 @@ def get_jsonparsed_data(url):
     except Exception as e:
         print("ERROR: Failure to retrieve Statement Analysis.","\n", e)
 
-print('*********** START OF SCRIPT ***********')
+print('*********** START OF SCRIPT ***********') # Info log to mark the start of the main loop
 
+# API-Call for financial statement
 try:
     financial_statement = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/financial-statement-full-as-reported/{str(stock_symbol)}?period=annual&limit=50&apikey={str(api_key)}")
     financial_statement_df_raw = pd.DataFrame(financial_statement)
@@ -137,7 +147,8 @@ try:
     print("SUCCESS: Financial statement loaded.")
 except Exception as e:
     print("ERROR: Failure to retrieve Financial Statement.","\n", e)
-    
+
+# API-Call for income statement
 try:
     income_statement = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/income-statement/{str(stock_symbol)}?period=annual&limit=50&apikey={str(api_key)}")
     income_statement_df_raw = pd.DataFrame(income_statement)
@@ -146,6 +157,7 @@ try:
 except Exception as e:
     print("ERROR: Failure to retrieve Income Statement.","\n", e)
 
+# API-Call for analysis of statement
 try:
     statement_analysis = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/key-metrics/{str(stock_symbol)}?period&limit=50&apikey={str(api_key)}")
     statement_analysis_df_raw = pd.DataFrame(statement_analysis)
@@ -154,6 +166,7 @@ try:
 except Exception as e:
     print("\n","ERROR: Failure to retrieve Statement Analysis.","\n", e)
 
+# API-Call for general company information
 try:
     company_information = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/profile/{str(stock_symbol)}?period&limit=1&apikey={str(api_key)}")
     company_information_df_raw = pd.DataFrame(company_information)
