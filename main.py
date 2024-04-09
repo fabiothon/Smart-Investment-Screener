@@ -127,7 +127,7 @@ def update_traces(button_idx):
 # =============================================================================
 # API-CALLS AND TRANSFORMATION TO DATAFRAMES
 # =============================================================================
-# API-CALL FUNTION: Access to the FMP-API with exception handling and manual logging
+# API-CALL FETCHING: Access to the FMP-API with exception handling and manual logging
 def get_jsonparsed_data(url):
     try:
         res = urlopen(url)
@@ -249,17 +249,17 @@ try:
 except Exception as e:
     print("\n","ERROR: Failure to generate historic values.","\n", e)
     
-# Calculation of TTM and historic ratios
+# Calculation of TTM and historic financial ratios
 try:
-    finance_df['operating_margin_historic'] = historic_values['operatingIncome'] / historic_values['revenue']
-    finance_df['operating_margin'] = (finance_df['operatingIncome'] / finance_df['revenue'])*100
-    finance_df['revenue_MM'] = (finance_df['revenue']) / (1000000)
-    finance_df['operating_margin_ttm'] = ttm_values['operatingIncome'] / ttm_values['revenue']
-    finance_df['revenue_per_share_historic'] = historic_values['revenue'] / historic_values['weightedaveragenumberofsharesoutstandingbasic']
-    finance_df['revenue_per_share_ttm'] = ttm_values['revenue'] / ttm_values['weightedaveragenumberofsharesoutstandingbasic']
-    finance_df['enterprisevalue_over_ebit'] = (ttm_values['enterpriseValue']) / (ttm_values['netIncome'] + ttm_values['incometaxexpensebenefit'] + ttm_values['totalOtherIncomeExpensesNet'])
-    finance_df['roic'] = finance_df['roic'] * 100
-    finance_df['netIncome_MM'] = (finance_df['netIncome']) / (1000000)
+    finance_df['operating_margin_historic'] = historic_values['operatingIncome'] / historic_values['revenue'] # Calculation of histroic operating margin
+    finance_df['operating_margin'] = (finance_df['operatingIncome'] / finance_df['revenue'])*100 # Calculation of current operating margin
+    finance_df['revenue_MM'] = (finance_df['revenue']) / (1000000) # Calculation of revenue expressed in Millions
+    finance_df['operating_margin_ttm'] = ttm_values['operatingIncome'] / ttm_values['revenue'] # Calculation of TTM operating margin
+    finance_df['revenue_per_share_historic'] = historic_values['revenue'] / historic_values['weightedaveragenumberofsharesoutstandingbasic'] # Calculation of historic revenue per share
+    finance_df['revenue_per_share_ttm'] = ttm_values['revenue'] / ttm_values['weightedaveragenumberofsharesoutstandingbasic'] # Calculation of TTM revenue per share
+    finance_df['enterprisevalue_over_ebit'] = (ttm_values['enterpriseValue']) / (ttm_values['netIncome'] + ttm_values['incometaxexpensebenefit'] + ttm_values['totalOtherIncomeExpensesNet']) # Calculation of EV/EBIT
+    finance_df['roic'] = finance_df['roic'] * 100 # Calculation of Return on invested capital
+    finance_df['netIncome_MM'] = (finance_df['netIncome']) / (1000000) # Calculation of net income expressed in Millions
     print("SUCCESS: TTM and historic ratios successfully calculated.")
 except Exception as e:
     print("\n","ERROR: Failure to calculate TTM and histroic ratios.","\n", e)
@@ -274,14 +274,14 @@ except Exception as e:
 #     print("\n","ERROR: Failure to calculate insider trading ratio.","\n", e)
 # =============================================================================
     
-# Calculation of growth CAGR and evaluation of the lowest growth variable
+# Calculation of growth CAGR (Compound Annual Growth Rate) and evaluation of the lowest growth variable
 try:
-    time_period = (finance_df.loc[latest_date_idx, 'year'] - finance_df.loc[historic_date_idx, 'year'])
-    finance_df['revenue_growth_cagr'] = (ttm_values['revenue']) / (historic_values['revenue'])**(1/time_period) - 1
-    finance_df['operating_income_growth_cagr'] = (ttm_values['operatingIncome']) / (historic_values['operatingIncome'])**(1/time_period) - 1
-    finance_df['revenue_per_share_growth_cagr'] = (finance_df['revenue_per_share_ttm']) / (finance_df['revenue_per_share_historic'])**(1/time_period) - 1
-    finance_df['operating_income_per_share_growth_cagr'] = (finance_df['revenue_per_share_ttm'] * finance_df['operating_margin_ttm']) / (finance_df['revenue_per_share_historic'] * finance_df['operating_margin_historic'])**(1/time_period) - 1
-    finance_df['lowest_growth'] = finance_df[['revenue_growth_cagr', 'operating_income_growth_cagr', 'revenue_per_share_growth_cagr', 'operating_income_per_share_growth_cagr']].min(axis=1)
+    time_period = (finance_df.loc[latest_date_idx, 'year'] - finance_df.loc[historic_date_idx, 'year']) # Calculation of time period between now and first vaule (should be more or less 5 years)
+    finance_df['revenue_growth_cagr'] = (ttm_values['revenue']) / (historic_values['revenue'])**(1/time_period) - 1 # Calculation of revenue growth (CAGR)
+    finance_df['operating_income_growth_cagr'] = (ttm_values['operatingIncome']) / (historic_values['operatingIncome'])**(1/time_period) - 1 # Calculation of operating income growth (CAGR)
+    finance_df['revenue_per_share_growth_cagr'] = (finance_df['revenue_per_share_ttm']) / (finance_df['revenue_per_share_historic'])**(1/time_period) - 1 # Calculation of revenue per share growth (CAGR)
+    finance_df['operating_income_per_share_growth_cagr'] = (finance_df['revenue_per_share_ttm'] * finance_df['operating_margin_ttm']) / (finance_df['revenue_per_share_historic'] * finance_df['operating_margin_historic'])**(1/time_period) - 1 # Calculation of operating income per share growth (CAGR)
+    finance_df['lowest_growth'] = finance_df[['revenue_growth_cagr', 'operating_income_growth_cagr', 'revenue_per_share_growth_cagr', 'operating_income_per_share_growth_cagr']].min(axis=1) # Calculation of the lowest (weakest) growth (CAGR) of all listed growths in this code block
     print("SUCCESS: Growth CAGR successfully calculated and new variable evaluated.")
 except Exception as e:
     print("\n","ERROR: Failure to calculate growth CAGR or evaluate new variable","\n", e)
@@ -290,13 +290,14 @@ except Exception as e:
 # NORMALIZATION AND WEIGHTED SCORING OF KEY DATA
 # =============================================================================
 
+# Calculation of the normalized values of key parameters in order to create a weighted score
 try:
-    finance_df['growth_normalized'] = (finance_df['lowest_growth']) / (2)
-    finance_df['roic_normalized'] = (finance_df['roic']) - (5 / 40 - 5)
-    finance_df['enterprisevalue_over_ebit_normalized'] = (finance_df['enterprisevalue_over_ebit'] - 5) / (10 - 5)
-    # finance_df['insiderratio_normalized'] = (finance_df['insiderratio'] - 0.08) / (0.1 - 0.08)
-    finance_df['score'] = (finance_df['growth_normalized'] * 0.25) + (finance_df['roic_normalized'] * 0.25) + (finance_df['enterprisevalue_over_ebit_normalized'] * 0.5)
-    finance_df['debtToEquity'] = (finance_df['debtToEquity']) * 100
+    finance_df['growth_normalized'] = (finance_df['lowest_growth']) / (2) # Normalization
+    finance_df['roic_normalized'] = (finance_df['roic']) - (5 / 40 - 5) # Normalization
+    finance_df['enterprisevalue_over_ebit_normalized'] = (finance_df['enterprisevalue_over_ebit'] - 5) / (10 - 5) # Normalization
+    # finance_df['insiderratio_normalized'] = (finance_df['insiderratio'] - 0.08) / (0.1 - 0.08) # Normalization (No data available due to free API-Plan)
+    finance_df['score'] = (finance_df['growth_normalized'] * 0.25) + (finance_df['roic_normalized'] * 0.25) + (finance_df['enterprisevalue_over_ebit_normalized'] * 0.5) # Calculation of weighted score
+    finance_df['debtToEquity'] = (finance_df['debtToEquity']) * 100 # Calculation of debt to equity ratio
     print("SUCCESS: Key data normalized and scored successfully.")
 except Exception as e:
     print("\n","ERROR: Failure to normalize and score key data.","\n", e)
@@ -305,6 +306,7 @@ except Exception as e:
 # MONTE CARLO SIMULATION
 # =============================================================================
 
+# Fetching financial data from Yahoo Finance
 price_data_raw = yf.download(stock_symbol, period="5y")
 price_data = price_data_raw['Close']
 log_returns_raw = np.log(price_data / price_data.shift(1))
