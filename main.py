@@ -306,23 +306,20 @@ except Exception as e:
 # MONTE CARLO SIMULATION
 # =============================================================================
 
-# Fetching financial data from Yahoo Finance
-price_data_raw = yf.download(stock_symbol, period="5y")
-price_data = price_data_raw['Close']
-log_returns_raw = np.log(price_data / price_data.shift(1))
-log_returns = log_returns_raw.dropna()
+price_data_raw = yf.download(stock_symbol, period="5y") # Fetching financial data from Yahoo Finance
+price_data = price_data_raw['Close'] # Takeing the closing price of fetched yahoo data
+log_returns_raw = np.log(price_data / price_data.shift(1)) # Return the sample variance of data using numpy
+log_returns = log_returns_raw.dropna() # Dropping all NA values
 
-mean_log_returns = log_returns.mean()
-var_log_returns = statistics.variance(log_returns)
-sdv_log_returns = statistics.stdev(log_returns)
+mean_log_returns = log_returns.mean() # Calculation of mean
+var_log_returns = statistics.variance(log_returns) # Calculation of statistical variance using statistics library
+sdv_log_returns = statistics.stdev(log_returns) # Calculation of standart deviation using statistics library
 
-drift = mean_log_returns - 0.5 * var_log_returns
-random_value = sdv_log_returns * np.random.normal()
+drift = mean_log_returns - 0.5 * var_log_returns # Calculation of the drift for the monte carlo simulation
+random_value = sdv_log_returns * np.random.normal() # Generating a random value based on the standart deviation
 
-
-mc_sims = 225  # number of simulations
-T = 360  # timeframe in days
-
+mc_sims = 225  # Number of simulations
+T = 7  # Timeframe in days
 
 simulated_prices = np.zeros((mc_sims, T))
 initial_price = price_data.iloc[-1]
