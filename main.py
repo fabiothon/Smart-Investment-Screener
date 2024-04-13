@@ -46,9 +46,9 @@ import yfinance as yf # Library to access Yahoo Finance API
 import statistics # For easier calculation
 import numpy as np # For easier calculation
 from plotly.subplots import make_subplots # Creates graphs
-from ta.utils import dropna # Creates graphs
-from ta.volatility import BollingerBands # Creates graphs
-from ta.trend import MACD # Creates graphs
+from ta.utils import dropna # Creates technical analysis graphs
+from ta.volatility import BollingerBands # Creates technical analysis graphs
+from ta.trend import MACD # Creates technical analysis graphs
 
 # =============================================================================
 # Global default setting: This section sets global variables
@@ -321,48 +321,48 @@ random_value = sdv_log_returns * np.random.normal() # Generating a random value 
 mc_sims = 225  # Number of simulations
 T = 7  # Timeframe in days
 
-simulated_prices = np.zeros((mc_sims, T))
-initial_price = price_data.iloc[-1]
+simulated_prices = np.zeros((mc_sims, T)) # Turn numbers into integer values
+initial_price = price_data.iloc[-1] # Takes the first price (initial value)
 
+# For-loop to calculate the simulation prices
 for i in range(mc_sims):
     today_price = initial_price
 
     for day in range(T):
-        random_value = sdv_log_returns * np.random.normal()
-        today_price = today_price * np.exp(drift + random_value)
+        random_value = sdv_log_returns * np.random.normal() 
+        today_price = today_price * np.exp(drift + random_value) 
         simulated_prices[i, day] = today_price
 
-simulated_prices_df = pd.DataFrame(simulated_prices.T, columns=[f'Simulation_{i+1}' for i in range(mc_sims)])
+simulated_prices_df = pd.DataFrame(simulated_prices.T, columns=[f'Simulation_{i+1}' for i in range(mc_sims)]) # Creation of dataframe and storage of results
 
 # =============================================================================
 # TECHNICAL CHART ANALYSIS
 # =============================================================================
 
-# Grab information form YahooFinance
-technical_analysis_df = yf.download(stock_symbol, period="5y")
-technical_analysis_df = dropna(technical_analysis_df)
-technical_analysis_df = calculate_bb_indicators(technical_analysis_df)
-technical_analysis_df = calculate_MACD_indicators(technical_analysis_df)
+technical_analysis_df = yf.download(stock_symbol, period="5y") # Fetch information from YahooFinance
+technical_analysis_df = dropna(technical_analysis_df) # Drop NA values
+technical_analysis_df = calculate_bb_indicators(technical_analysis_df) # Creation of Bolinger Band data using the TA library
+technical_analysis_df = calculate_MACD_indicators(technical_analysis_df) # Creation of the MACD data using the TA library
 
 # Crossings of SMA to stock price
-technical_analysis_df['Crossings'] = 0
-crossing_indices_below = (technical_analysis_df['Close'] > technical_analysis_df['SMA50']) & (technical_analysis_df['Close'].shift(-1) < technical_analysis_df['SMA50'].shift(-1))
-crossing_indices_above = (technical_analysis_df['Close'] < technical_analysis_df['SMA50']) & (technical_analysis_df['Close'].shift(-1) > technical_analysis_df['SMA50'].shift(-1))
+technical_analysis_df['Crossings'] = 0 # Initialising a new column in the dataframe
+crossing_indices_below = (technical_analysis_df['Close'] > technical_analysis_df['SMA50']) & (technical_analysis_df['Close'].shift(-1) < technical_analysis_df['SMA50'].shift(-1)) # Calculation of crossing below
+crossing_indices_above = (technical_analysis_df['Close'] < technical_analysis_df['SMA50']) & (technical_analysis_df['Close'].shift(-1) > technical_analysis_df['SMA50'].shift(-1)) # Calculation of crossing above
 technical_analysis_df.loc[crossing_indices_below, 'Crossings'] = -1
 technical_analysis_df.loc[crossing_indices_above, 'Crossings'] = 1
 
 # Add markers for crossings "SELL"
 cross_below = go.Scatter(x=technical_analysis_df[technical_analysis_df['Crossings'] == -1].index, y=technical_analysis_df[technical_analysis_df['Crossings'] == -1]['SMA50'],
-    mode='markers', name='Price Crosses Below SMA50', marker=dict(symbol=downwards_pyramid_symbol, color='red', size=7.5))
+    mode='markers', name='Price Crosses Below SMA50', marker=dict(symbol=downwards_pyramid_symbol, color='red', size=7.5)) # Adding markers to the crossing point indicating SELL
 
 # Add markers for crossings "BUY"
 cross_above = go.Scatter(x=technical_analysis_df[technical_analysis_df['Crossings'] == 1].index, y=technical_analysis_df[technical_analysis_df['Crossings'] == 1]['SMA50'],
-    mode='markers', name='Price Crosses Above SMA50', marker=dict(symbol=upwards_pyramid_symbol, color='green', size=7.5))
+    mode='markers', name='Price Crosses Above SMA50', marker=dict(symbol=upwards_pyramid_symbol, color='green', size=7.5)) # Adding markers to the crossing point indicating BUY
 
 # Identify bullish and bearish crossover points
-technical_analysis_df['Crossings_1'] = 0
-crossing_indices_below_1 = (technical_analysis_df['MACD'] > technical_analysis_df['MACD_Signal']) & (technical_analysis_df['MACD'].shift(-1) <= technical_analysis_df['MACD_Signal'].shift(-1))
-crossing_indices_above_1 = (technical_analysis_df['MACD'] < technical_analysis_df['MACD_Signal']) & (technical_analysis_df['MACD'].shift(-1) >= technical_analysis_df['MACD_Signal'].shift(-1))
+technical_analysis_df['Crossings_1'] = 0 # Initlaising a new column in the dataframe
+crossing_indices_below_1 = (technical_analysis_df['MACD'] > technical_analysis_df['MACD_Signal']) & (technical_analysis_df['MACD'].shift(-1) <= technical_analysis_df['MACD_Signal'].shift(-1)) # Calculation of crossing below
+crossing_indices_above_1 = (technical_analysis_df['MACD'] < technical_analysis_df['MACD_Signal']) & (technical_analysis_df['MACD'].shift(-1) >= technical_analysis_df['MACD_Signal'].shift(-1)) # Calculation of crossing above
 technical_analysis_df.loc[crossing_indices_below_1, 'Crossings_1'] = -1
 technical_analysis_df.loc[crossing_indices_above_1, 'Crossings_1'] = 1
 
@@ -370,6 +370,7 @@ technical_analysis_df.loc[crossing_indices_above_1, 'Crossings_1'] = 1
 # CREATION OF CHARTS FOR DASHBOARD
 # =============================================================================
 try:
+    # Revenue chart on dashboard
     revenue_chart = finance_df.hvplot.line(
         x='year', 
         y='revenue_MM', 
@@ -380,7 +381,7 @@ try:
         xlabel="Time (Years)",
         ylabel=f"Total Revenues ({company_information_df.loc[0, 'currency']} M.)"
     )
-    
+    # Earnings chart on dashboard
     earning_chart = finance_df.hvplot.line(
         x='year', 
         y='netIncome_MM', 
@@ -391,7 +392,7 @@ try:
         xlabel="Time (Years)",
         ylabel=f"Total Earnings ({company_information_df.loc[0, 'currency']} M.)"
     )
-    
+    # Operating margin chart on dashboard
     operating_margin_chart = finance_df.hvplot.line(
         x='year', 
         y='operating_margin', 
@@ -402,7 +403,7 @@ try:
         xlabel="Time (Years)",
         ylabel="Operating Margin(%)"
     )
-    
+    # Monte Carlo Simulation chart on dashboard
     montecarlo_chart = px.line(simulated_prices_df, 
         x=simulated_prices_df.index, 
         y=simulated_prices_df.columns, 
@@ -410,37 +411,38 @@ try:
         labels={'index': 'Days', 'value': f"Stock Price in {company_information_df.loc[0, 'currency']}"},
         line_shape='linear'
     )
-    montecarlo_chart.update_layout(showlegend=False)
-    montecarlo_chart.update_traces(line={'width':0.5})
+    montecarlo_chart.update_layout(showlegend=False) # Suppress legend
+    montecarlo_chart.update_traces(line={'width':0.5}) # Change line width to a smaller size
     
-    total_distribution_raw = simulated_prices_df.melt(var_name='Simulation', value_name='Stock Prices')
-    total_distribution = total_distribution_raw.drop(columns='Simulation')
-    montecarlo_hist_chart = px.histogram(total_distribution,
+    total_distribution_raw = simulated_prices_df.melt(var_name='Simulation', value_name='Stock Prices') 
+    total_distribution = total_distribution_raw.drop(columns='Simulation') # Creation of data for the distrubution of the Monte Carlo Simulation
+    montecarlo_hist_chart = px.histogram(total_distribution, # Showing distribution of Monte Carlo Simulation with histogram
         x='Stock Prices',
         title= f"Distribution of simulated {company_information_df.loc[0, 'companyName']} Stock Prices through Monte Carlo Simulation",
         labels={'value': f"Stock Price in {company_information_df.loc[0, 'currency']}"}
     )
-    montecarlo_hist_chart.add_vline(x=company_information_df.loc[0, 'price'],
+    montecarlo_hist_chart.add_vline(x=company_information_df.loc[0, 'price'], # Adding the current price to the histogram
                                     line_dash="dot",
                                     annotation_text="Current price", 
                                     annotation_position="bottom right")
     
-    montecarlo_box_chart = px.box(total_distribution, 
+    montecarlo_box_chart = px.box(total_distribution, # Adding a boxplot to show distribution of the Monte Carlo Simulation
         x='Stock Prices',
         points= False,
         title= f"Distribution of simulated {company_information_df.loc[0, 'companyName']} Stock Prices through Monte Carlo Simulation",
         labels={'value': f"Stock Price in {company_information_df.loc[0, 'currency']}"}
     )
-    montecarlo_box_chart.add_vline(x=company_information_df.loc[0, 'price'],
+    montecarlo_box_chart.add_vline(x=company_information_df.loc[0, 'price'], # Adding a current price to the boxplot
                                    line_dash="dot",
                                    annotation_text="Current price", 
                                    annotation_position="bottom right")
     
-    daily_chart_eod = go.Figure(data=[go.Candlestick(x=chart_information_df['date'],
-        open=chart_information_df['open'],
-        high=chart_information_df['high'],
-        low=chart_information_df['low'],
-        close=chart_information_df['close'])])
+    # Daily prices chart (End-of-day data) on dashboard 
+    daily_chart_eod = go.Figure(data=[go.Candlestick(x=chart_information_df['date'], # Creation of candlestick chart for the EOD Price
+        open=chart_information_df['open'], # Open price
+        high=chart_information_df['high'], # Highest price of the day
+        low=chart_information_df['low'], # Lowest price of the day
+        close=chart_information_df['close'])]) # Closing price of the day
     daily_chart_eod.update_layout(
     title=f"Historical prices of {company_information_df.loc[0, 'companyName']}",
     yaxis_title=f"{company_information_df.loc[0, 'symbol']} Stock Price ({company_information_df.loc[0, 'currency']})",
@@ -453,7 +455,7 @@ try:
         showarrow=False, xanchor='left', text='Covid stock market crash')]
     )
     
-    # Initialize tech_charture
+    # Technical Analysis chart on dashboard
     tech_chart = make_subplots(rows=6, cols=1, subplot_titles=("Interactive Chart","MACD Chart"), 
                         specs=[[{"rowspan": 3}], [None], [None], [None], [{"rowspan": 2}], [None]])
 
