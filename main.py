@@ -443,7 +443,7 @@ try:
         high=chart_information_df['high'], # Highest price of the day
         low=chart_information_df['low'], # Lowest price of the day
         close=chart_information_df['close'])]) # Closing price of the day
-    daily_chart_eod.update_layout(
+    daily_chart_eod.update_layout( # Adding title, x-axis and y-axis title, shape and annotation
     title=f"Historical prices of {company_information_df.loc[0, 'companyName']}",
     yaxis_title=f"{company_information_df.loc[0, 'symbol']} Stock Price ({company_information_df.loc[0, 'currency']})",
     xaxis_title="Time (Date)",
@@ -456,13 +456,13 @@ try:
     )
     
     # Technical Analysis chart on dashboard
-    tech_chart = make_subplots(rows=6, cols=1, subplot_titles=("Interactive Chart","MACD Chart"), 
+    tech_chart = make_subplots(rows=6, cols=1, subplot_titles=("Interactive Chart","MACD Chart"),  # Creating a subplot
                         specs=[[{"rowspan": 3}], [None], [None], [None], [{"rowspan": 2}], [None]])
 
     bullish_crossover = go.Scatter(x=technical_analysis_df[technical_analysis_df['Crossings_1'] == -1].index, y=technical_analysis_df[technical_analysis_df['Crossings_1'] == -1]['MACD'],
-        mode='markers', name='Bearish Crossover', marker=dict(symbol='diamond', color='red', size=7.5))
+        mode='markers', name='Bearish Crossover', marker=dict(symbol='diamond', color='red', size=7.5)) # Adding crossover points in the subplot for bullish markets
     bearish_crossover = go.Scatter(x=technical_analysis_df[technical_analysis_df['Crossings_1'] == 1].index, y=technical_analysis_df[technical_analysis_df['Crossings_1'] == 1]['MACD'],
-        mode='markers', name='Bullish Crossover', marker=dict(symbol='diamond', color='green', size=7.5))
+        mode='markers', name='Bullish Crossover', marker=dict(symbol='diamond', color='green', size=7.5)) # Adding crossover points in the subplot for bearish markets
 
     # Add Traces
     tech_chart.add_trace(go.Candlestick(x=technical_analysis_df.index, name="Stock Price", open=technical_analysis_df['Open'], high=technical_analysis_df['High'], low=technical_analysis_df['Low'],
