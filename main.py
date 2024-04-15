@@ -372,34 +372,34 @@ technical_analysis_df.loc[crossing_indices_above_1, 'Crossings_1'] = 1
 try:
     # Revenue chart on dashboard
     revenue_chart = finance_df.hvplot.line(
-        x='year', 
-        y='revenue_MM', 
-        height=300, 
-        width=700,
-        color="#E54871",
-        title="History of Total Revenues",
+        x='year', # Data for x-axis
+        y='revenue_MM', # Data for y-axis
+        height=300, # Size of chart
+        width=700, # Size of chart
+        color="#E54871", # Color of chart
+        title="History of Total Revenues", # Title of chart abd x-/y-axis
         xlabel="Time (Years)",
         ylabel=f"Total Revenues ({company_information_df.loc[0, 'currency']} M.)"
     )
     # Earnings chart on dashboard
     earning_chart = finance_df.hvplot.line(
-        x='year', 
-        y='netIncome_MM', 
-        height=300, 
-        width=700,
-        color="#E54871",
-        title="History of Total Earnings",
+        x='year', # Data for x-axis
+        y='netIncome_MM', # Data for y-axis
+        height=300, # Size of chart
+        width=700, # Size of chart
+        color="#E54871", # Color of chart
+        title="History of Total Earnings", # Title of chart abd x-/y-axis
         xlabel="Time (Years)",
         ylabel=f"Total Earnings ({company_information_df.loc[0, 'currency']} M.)"
     )
     # Operating margin chart on dashboard
     operating_margin_chart = finance_df.hvplot.line(
-        x='year', 
-        y='operating_margin', 
-        height=300, 
-        width=700,
-        color="#E54871",
-        title="History of Operating Margin",
+        x='year', # Data for x-axis
+        y='operating_margin', # Data for y-axis
+        height=300, # Size of chart
+        width=700, # Size of chart
+        color="#E54871", # Color of chart
+        title="History of Operating Margin", # Title of chart abd x-/y-axis
         xlabel="Time (Years)",
         ylabel="Operating Margin(%)"
     )
@@ -466,37 +466,35 @@ try:
 
     # Add Traces
     tech_chart.add_trace(go.Candlestick(x=technical_analysis_df.index, name="Stock Price", open=technical_analysis_df['Open'], high=technical_analysis_df['High'], low=technical_analysis_df['Low'],
-                                 close=technical_analysis_df['Close'], increasing_line_color= 'skyblue', decreasing_line_color= 'gray'), row=1, col=1)
-    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['Close'], name="Close", line=dict(color="#BB2649", width=1)), row=1, col=1)
-    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['bb_bbm'], name="SMA-20", visible=False, line=dict(color="#006400", width=1)), row=1, col=1)
-    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['SMA50'], name="SMA-50", visible=False, line=dict(color="#009000", width=1)), row=1, col=1)
-    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['SMA200'], name="SMA-200", visible=False, line=dict(color="#090000", width=1)), row=1, col=1)
-    tech_chart.add_trace(cross_below)
-    tech_chart.add_trace(cross_above)
+                                 close=technical_analysis_df['Close'], increasing_line_color= 'skyblue', decreasing_line_color= 'gray'), row=1, col=1) # Adding a candlestick line to the plot
+    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['Close'], name="Close", line=dict(color="#BB2649", width=1)), row=1, col=1) # Adding a closing line to the plot
+    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['bb_bbm'], name="SMA-20", visible=False, line=dict(color="#006400", width=1)), row=1, col=1) # Adding a simple moving average for the last 20 days
+    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['SMA50'], name="SMA-50", visible=False, line=dict(color="#009000", width=1)), row=1, col=1) # Adding a simple moving average for the last 50 days
+    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['SMA200'], name="SMA-200", visible=False, line=dict(color="#090000", width=1)), row=1, col=1) # Adding a simple moving average for the last 200 days
+    tech_chart.add_trace(cross_below) # Crossover from below point
+    tech_chart.add_trace(cross_above) # Crossover from above point
     tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['bb_bbh'], fill='tonexty', fillcolor='rgba(186, 38, 73, 0.025)', 
-                             name="Bollinger Bands", visible=False, line=dict(color="#000000", width=0.5)), row=1, col=1)
+                             name="Bollinger Bands", visible=False, line=dict(color="#000000", width=0.5)), row=1, col=1) # Adding Bollinger Bands to the plot
     tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['bb_bbl'], fill='tonexty', fillcolor='rgba(186, 38, 73, 0.05)', 
-                             visible=False, showlegend=False, line=dict(color="#000000", width=0.5)), row=1, col=1)
+                             visible=False, showlegend=False, line=dict(color="#000000", width=0.5)), row=1, col=1) # Adding Bollinger Bands to the plot
     # Subplot Traces
-    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['MACD'], name="MACD Line", line=dict(color="#3633FF", width=1)), row=5, col=1)
-    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['MACD_Signal'], name="Signal Line", line=dict(color="#624990", width=1)), row=5, col=1)
+    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['MACD'], name="MACD Line", line=dict(color="#3633FF", width=1)), row=5, col=1) # Addint the MACD line to the plot
+    tech_chart.add_trace(go.Scatter(x=technical_analysis_df.index, y=technical_analysis_df['MACD_Signal'], name="Signal Line", line=dict(color="#624990", width=1)), row=5, col=1) # Adding the Signal line to the plot
 
-    tech_chart.add_trace(bullish_crossover, row=5, col=1)
-    tech_chart.add_trace(bearish_crossover, row=5, col=1)
+    tech_chart.add_trace(bullish_crossover, row=5, col=1) # Crossover points for the subplot (bullish)
+    tech_chart.add_trace(bearish_crossover, row=5, col=1) # Crossover points for the subplot (bearish)
 
     # Subplot tech_chart Update
-    tech_chart.update_xaxes(title_text="Time (Date)", showgrid=False, row=5, col=1)
-    tech_chart.update_yaxes(title_text="Numerical difference", showgrid=False, row=5, col=1)
-
+    tech_chart.update_xaxes(title_text="Time (Date)", showgrid=False, row=5, col=1) # Adding titles for the subplot
+    tech_chart.update_yaxes(title_text="Numerical difference", showgrid=False, row=5, col=1) # Adding titles for the subplot
 
     # Define button options
-    button_labels = ['None', 'Moving Averages', 'Buy/Sell Indicators', 'Bollinger Bands', 'All']
-    button_visibility = [[True, False, False, False, False], [True, True, True, False, False], [False, False, True, True, False], [True, True, True, True, True]]
-
+    button_labels = ['None', 'Moving Averages', 'Buy/Sell Indicators', 'Bollinger Bands', 'All'] # Button lables
+    button_visibility = [[True, False, False, False, False], [True, True, True, False, False], [False, False, True, True, False], [True, True, True, True, True]] # Defining button logic
 
     # Add buttons
-    buttons = [dict(label=label, method="update", args=[{"visible": update_traces(idx)}, {"title": f"Chart Analysis: {stock_symbol} - {label}"}]) for idx, label in enumerate(button_labels)]
-    tech_chart.update_layout(updatemenus=[dict(type="buttons", direction="right", active=0, x=0.57, y=1.2, buttons=buttons)])
+    buttons = [dict(label=label, method="update", args=[{"visible": update_traces(idx)}, {"title": f"Chart Analysis: {stock_symbol} - {label}"}]) for idx, label in enumerate(button_labels)] # Add buttons
+    tech_chart.update_layout(updatemenus=[dict(type="buttons", direction="right", active=0, x=0.57, y=1.2, buttons=buttons)]) # Update of the chart
 
     # Set title and show plot
     tech_chart.update_layout(title_text=f"Chart Analysis: {stock_symbol} - None", xaxis_domain=[0.05, 1.0], yaxis_title=f"{company_information_df.loc[0, 'symbol']} Stock Price ({company_information_df.loc[0, 'currency']}", xaxis_rangeslider_visible=False,
@@ -511,27 +509,27 @@ except Exception as e:
 # =============================================================================
 
 try:
-    number_score = pn.indicators.Number(
+    number_score = pn.indicators.Number( # Display of the total investment score
         name='Total Investment Score', value=round(finance_df.loc[0,'score'],2), format='{value}',
         font_size='28px', title_size='16px'
     )
     
-    number_debtratio = pn.indicators.Number(
+    number_debtratio = pn.indicators.Number( # Display of the debt to equity ratio
         name='Debt to Equity ratio', value=round(finance_df.loc[0,'debtToEquity'],1), format='{value}%',
         font_size='28px', title_size='16px'
     )
     
-    linear_gauge_roic = pn.indicators.LinearGauge(
+    linear_gauge_roic = pn.indicators.LinearGauge( # Display of the Return of Invested Capital Gauge
         name='Return on Invested Capital (ROIC)', value=round(finance_df.loc[0,'roic'],2), bounds=(0, 60), format='{value}%',
         colors=[(0.083333333, '#ff6666'), (0.66666666, '#ffff66'), (1, '#85e085')], horizontal = True, show_boundaries=True, title_size='16px'
     )
     
-    linear_gauge_evoverebit = pn.indicators.LinearGauge(
+    linear_gauge_evoverebit = pn.indicators.LinearGauge( # Display of the Enterprise Value over EBIT Gauge
         name='Enterprise Value over EBIT', value=round(finance_df.loc[0,'enterprisevalue_over_ebit'],2), bounds=(0, 40), format='{value}',
         colors=[(0.25, '#85e085'), (0.395, '#ffff66'), (1, '#ff6666')], horizontal = True, show_boundaries=True, title_size='16px'
     )
     
-    linear_gauge_growth = pn.indicators.LinearGauge(
+    linear_gauge_growth = pn.indicators.LinearGauge( # Display of the Minimum Growth Gauge
         name='Minimum Growth (CAGR)', value=round(finance_df.loc[0,'lowest_growth'],2), bounds=(0, 5), format='{value}%',
         colors=[(0.25, '#ff6666'), (0.35, '#ffff66'), (1, '#85e085')], horizontal = True, show_boundaries=True, title_size='16px'
     )
@@ -556,7 +554,7 @@ try:
     button_23 = pn.widgets.CheckButtonGroup(name='Structured', button_type='danger', button_style='outline', options=['Stable Growth', 'Low Debt', 'Reliability Earnings'])
     layout_2 = pn.Column(button_21, button_22, button_23)
     
-    tabs = pn.Tabs((('Unstructured Filters', layout_1)),(('Structured Filters'), layout_2))
+    tabs = pn.Tabs((('Unstructured Filters', layout_1)),(('Structured Filters'), layout_2)) # Creation of tabs
     
     print("SUCCESS: Buttons successfully created.")
 except Exception as e:
@@ -566,6 +564,7 @@ except Exception as e:
 # CREATION OF SIDEBAR FOR DASHBOARD
 # =============================================================================
 
+# Text for the side bar
 text = f"""
 #  {company_information_df.loc[0, 'companyName']}
 
@@ -601,6 +600,7 @@ explanation = """
 The visualized data is sourced from [this Finance API](https://site.financialmodelingprep.com). The curated and visualized financial data is inspired by the [magic formula](https://en.wikipedia.org/wiki/Magic_formula_investing) from [Mr. Joel Greenblatt](https://en.wikipedia.org/wiki/Joel_Greenblatt) and the [value investing principles](https://en.wikipedia.org/wiki/Value_investing) from [Benjamin Graham](https://en.wikipedia.org/wiki/Benjamin_Graham).
 """
 
+# Creation of sidebar
 sidebar = pn.layout.WidgetBox(
     pn.pane.Markdown(text, margin=(0, 10)),
     explanation,
@@ -614,6 +614,7 @@ sidebar
 # IMPORT OF LOGO FOR HEADER
 # =============================================================================
 
+# Fetching the file for the logo
 logo_path = '/Users/fabiothon/Desktop/Code/API_Finance/logo.png'
 logo = Image.open(logo_path)
 
@@ -635,15 +636,16 @@ header = pn.Row(
 # CREATION OF DASHBOARD
 # =============================================================================
 
+# Defining template for the panel
 template = pn.template.BootstrapTemplate(
-    title="Investment Portfolio",
-    header_background=accent,
+    title="Investment Portfolio", # Title
+    header_background=accent, # Background color
     header=header,
     sidebar=sidebar,
     main=[
-        pn.Row(
+        pn.Row( # Creation of rows and columns to structure the plots
             pn.Column(
-                pn.Card(linear_gauge_roic, linear_gauge_evoverebit, linear_gauge_growth, number_score, number_debtratio, tabs),
+                pn.Card(linear_gauge_roic, linear_gauge_evoverebit, linear_gauge_growth, number_score, number_debtratio, tabs), # Creating a card to display the plots within
                 align='start',
                 sizing_mode='stretch_width',
                 max_width = 360
@@ -680,7 +682,7 @@ template = pn.template.BootstrapTemplate(
     ]
 )
 
-template.show()
+template.show() # Activates the dashboard to be displayed on the localhost of the user
 
 print('*********** END OF SCRIPT ***********')
 # =============================================================================
