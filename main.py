@@ -648,7 +648,7 @@ template = pn.template.BootstrapTemplate(
                 pn.Card(linear_gauge_roic, linear_gauge_evoverebit, linear_gauge_growth, number_score, number_debtratio, tabs), # Creating a card to display the plots within
                 align='start',
                 sizing_mode='stretch_width',
-                max_width = 360
+                max_width = 360 # Set max height
             ),
             pn.Column(
                 pn.Card(revenue_chart, earning_chart, operating_margin_chart),
@@ -667,7 +667,7 @@ template = pn.template.BootstrapTemplate(
             pn.Card(tech_chart),
             align='start',
             sizing_mode='stretch_width',
-            height=1200
+            height=1200 # Set max height
         ),
         pn.Row(
             pn.Card(montecarlo_chart),
