@@ -319,7 +319,7 @@ drift = mean_log_returns - 0.5 * var_log_returns # Calculation of the drift for 
 random_value = sdv_log_returns * np.random.normal() # Generating a random value based on the standart deviation
 
 mc_sims = 225  # Number of simulations
-T = 7  # Timeframe in days
+T = 60  # Timeframe in days
 
 simulated_prices = np.zeros((mc_sims, T)) # Turn numbers into integer values
 initial_price = price_data.iloc[-1] # Takes the first price (initial value)
@@ -675,7 +675,12 @@ template = pn.template.BootstrapTemplate(
             sizing_mode='stretch_width'
         ),
         pn.Row(
-            pn.Card(pn.Row(montecarlo_hist_chart, montecarlo_box_chart)),
+            pn.Card(montecarlo_hist_chart),
+            align='start',
+            sizing_mode='stretch_width'
+        ),
+        pn.Row(
+            pn.Card(montecarlo_box_chart),
             align='start',
             sizing_mode='stretch_width'
         )
