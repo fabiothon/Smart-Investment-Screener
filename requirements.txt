@@ -9,6 +9,7 @@ contourpy==1.2.1
 frozendict==2.4.1
 holoviews==1.18.3
 html5lib==1.1
+hvplot==0.10.0
 idna==3.6
 jaraco.classes==3.4.0
 jaraco.context==4.3.0

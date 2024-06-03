@@ -615,7 +615,7 @@ sidebar
 # =============================================================================
 
 # Fetching the file for the logo
-logo_path = '/Users/fabiothon/Desktop/Code/API_Finance/logo.png'
+logo_path = 'logo.png'
 logo = Image.open(logo_path)
 
 # Convertion from Pillow to BytesIO
