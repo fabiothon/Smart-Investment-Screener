@@ -1,0 +1,18 @@
+['operatingincomeloss', 'nonoperatingincomeexpense']
+
+"['nonoperatingincomeexpense'] not in index"
+
+"['revenuefromcontractwithcustomerexcludingassessedtax', 'nonoperatingincomeexpense'] not in index"
+
+
+"['nonoperatingincomeexpense'] not in index"
+
+"['revenuefromcontractwithcustomerexcludingassessedtax'] not in index"
+
+ "['nonoperatingincomeexpense'] not in index"
+
+"['nonoperatingincomeexpense'] not in index"
+
+"['nonoperatingincomeexpense'] not in index"
+
+"['nonoperatingincomeexpense'] not in index"
