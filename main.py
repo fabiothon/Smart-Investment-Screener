@@ -23,7 +23,7 @@
 # the utilized API. This means there's a limit on the number of API calls that can be made 
 # per day, and it's possible that this limit could change in the future. Additionally, you may 
 # notice some commented-out code within the script, which remains unused at present. However, 
-# it could become relevant if a paid plan is opted for in the future.
+# it could become relevant if a paid plan is opted for in the future!
 
 # =============================================================================
 # Libraries

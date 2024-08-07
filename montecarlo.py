@@ -6,7 +6,7 @@
 
 # This script is a seperate document that was used to develop a monte carlo simulation 
 # that was implemented into the main.py (Smart Investment Screener). The code is documented
-# and commented in the main.py file and additional information is found in the README File
+# and commented in the main.py file and additional information is found in the README File.
 
 import pandas as pd
 import yfinance as yf
